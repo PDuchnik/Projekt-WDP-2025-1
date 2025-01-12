@@ -1,6 +1,4 @@
-from dataclasses import dataclass
 
-@dataclass
 class MapLocation:
     Name: str
     Coordinates: tuple[int, int] #wspolrzedne sluzace do obliczania odleglosci miedzy lokacjami
