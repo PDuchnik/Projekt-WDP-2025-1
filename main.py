@@ -6,6 +6,7 @@ Stats = {} #statystyki gracza bedziemy trzymac w slowniku, indeksowanym po nazwa
 MapLocationsDict = {} #slownik indeksowany po nazwach lokacji, z przypisanymi wartosciami
                       #typu MapLocation dla odpowiednich lokacji
 Miasto1 = MapLocation("Miasto1", (0,0), "town")
+Miasto1.Name
 def PassTime(): #funkcja odpowiedzialna za zwiekszanie wartosci Time
     ...         #wywolywana pod koniec funkcji odpowiedzialnych za aktywnosci - przemieszczanie,
                 #spanie...

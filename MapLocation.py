@@ -8,3 +8,11 @@ class MapLocation:
         self.Name = _name
         self.Coordinates = _coordinates
         self.Type = _type
+
+
+gjnanjfnkdng
+
+1
+2
+3
+4
