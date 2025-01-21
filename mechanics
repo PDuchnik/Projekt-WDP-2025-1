@@ -1,0 +1,69 @@
+class Player:
+    def __init__(self, max_health):
+        self.max_health = max_health
+        self.current_health = max_health
+        self.max_temperature = max_temperature
+        self.body_temperature = max_temperature
+        self.min_safe_temperature = 35.0  # Minimalna bezpieczna temperatura ciała
+        self.warmth_protection = 0  # Ochrona przed zimnem
+
+    def take_damage(self, amount):
+        """Zmniejsza zdrowie gracza o podaną wartość."""
+        self.current_health -= amount
+        if self.current_health < 0:
+            self.current_health = 0
+        if Test==true:
+            print(f"Gracz otrzymał {amount} obrażeń. Zdrowie: {self.current_health}/{self.max_health}")
+
+    def heal(self, amount):
+        """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
+        self.current_health += amount
+        if self.current_health > self.max_health:
+            self.current_health = self.max_health
+        if Test==true:
+            print(f"Gracz odzyskał {amount} zdrowia. Zdrowie: {self.current_health}/{self.max_health}")
+
+    def is_alive(self):
+        """Sprawdza, czy gracz żyje."""
+        return self.current_health > 0
+
+def update_temperature(self, ambient_temperature, is_near_fire):
+        """Aktualizuje temperaturę ciała gracza na podstawie otoczenia i ochrony przed zimnem."""
+        temperature_change = ambient_temperature - self.body_temperature
+        protection_effect = self.warmth_protection / 100
+
+        if is_near_fire:
+            self.body_temperature += 1.5  # Gracz ogrzewa się przy ognisku
+        else:
+            self.body_temperature += temperature_change * (1 - protection_effect)
+
+        if self.body_temperature < self.min_safe_temperature:
+            self.take_damage(1)  # Spadek zdrowia z powodu hipotermii
+
+        print(f"Temperatura ciała: {self.body_temperature:.1f}°C")
+
+    def equip_clothing(self, clothing_items):
+        """Wylicza całkowitą ochronę przed zimnem na podstawie założonych ubrań."""
+        self.warmth_protection = sum(clothing_items.values())
+        print(f"Ochrona przed zimnem: {self.warmth_protection}")
+
+# Przykład użycia z zewnętrznymi danymi o ubraniach
+if __name__ == "__main__":
+    # Dane o ubraniach z poziomami ochrony
+    clothing_data = {
+        "jacket": {"level_1": 20, "level_2": 30, "level_3": 40},
+        "boots": {"level_1": 10, "level_2": 20, "level_3": 30},
+        "gloves": {"level_1": 5, "level_2": 10, "level_3": 15},
+        "hat": {"level_1": 10, "level_2": 15, "level_3": 20}
+    }
+
+    player = Player(max_health=100, max_temperature=37.0)
+
+    # Gracz zakłada ubrania na poziomie 2
+    equipped_clothing = {
+        "jacket": clothing_data["jacket"]["level_2"],
+        "boots": clothing_data["boots"]["level_2"],
+        "gloves": clothing_data["gloves"]["level_2"],
+        "hat": clothing_data["hat"]["level_2"]
+    }
+    player.equip_clothing(equipped_clothing)
