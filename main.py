@@ -1,57 +1,61 @@
 from MapLocation import MapLocation
+from MapLocation import Locations
 from ClothingLayer import ClothingLayer
+import LocationLoots as loots
 import random
 
-ClothingValuesDict = {
-    "Rekawiczki1": []
+StatsDict = {
+    "Zdrowie": 100,
+    "Zmęczenie": 0,
+    "Temperatura": 0,
+    "Głód": 100,
+    "Pragnienie": 100,
+    "Obciążenie": 0,
+    "Czas": 0,
+    "Obecna Lokacja": Locations[0]
 }
-Layer1 = ClothingLayer("Nazwa1", 10)
 
-MapLocationsDict = {} #slownik indeksowany po nazwach lokacji, z przypisanymi wartosciami
-                      #typu MapLocation dla odpowiednich lokacji
-Miasto1 = MapLocation("Miasto1", (0,0), "town", 0)
-Miasto1.Name
-def PassTime(): #funkcja odpowiedzialna za zwiekszanie wartosci Time
+def Scavenge(time = 1):
+    ...
+    print(StatsDict["Obecna Lokacja"].Loot[0])
+    PassTime(60 * time)
+def PassTime(timeToPass:int): #funkcja odpowiedzialna za zwiekszanie wartosci Time
+    StatsDict["Czas"] += timeToPass
     ...         #wywolywana pod koniec funkcji odpowiedzialnych za aktywnosci - przemieszczanie,
                 #spanie...
 def StatsLog(): #funkcja wypisujaca statystyki gracza do konsoli
-    ...
+    for stat in StatsDict:
+        if type(StatsDict[stat]) == type(StatsDict["Obecna Lokacja"]):
+            print(stat + ': ' + StatsDict[stat].Name)
+        else:
+            print(stat + ': ' + str(StatsDict[stat]))
+
 def DisplayStartScreen(): #funkcja wywolywana na poczatku programu, wypisujaca wiadomosc startowa
     ...                   #czymkolwiek by nie byla
 def UseItem():
     ...
-
-Time = 0
-HP = 0
-Fatigue = 0
-BodyTemperature = 36.6
-Hunger = 100
-Thirst = 100
-Weight = 0
-
-
-WorldTemperature = 0
-CurrentLocation = ""
+def MoveLocation(newLocationIndex):
+    StatsDict["Obecna Lokacja"] = Locations[newLocationIndex]
+    PassTime(60)
 
 DisplayStartScreen()
-while(True):
-    StatsLog()
+while True:
     actionIndex = input()
     match actionIndex:
-        case 1:
-            ...
-            #StatsLogs()
-        case 2:
+        case '1':
+            StatsLog()
+        case '2':
             ...
             #LogEquipment()
             UseItem()
-        case 3:
-            ...
-            #MoveLocation()
-        case 4:
-            ...
-            #Scavenge()
-        case 5:
+        case '3':
+            newLocationIndex = int(input())
+            MoveLocation(newLocationIndex)
+            print(StatsDict["Obecna Lokacja"].Name)
+        case '4':
+            timeInput = int(input())
+            Scavenge(timeInput)
+        case '5':
             ...
             #Rest()
         case _:
