@@ -1,51 +1,32 @@
 class Player:
-    def __init__(self, max_health):
-        self.max_health = max_health
-        self.current_health = max_health
-        self.max_temperature = max_temperature
-        self.body_temperature = max_temperature
-        self.min_safe_temperature = 35.0  # Minimalna bezpieczna temperatura ciała
-        self.warmth_protection = 0  # Ochrona przed zimnem
+    def __init__(self, stats):
+        self.stats = stats  # Słownik ze statystykami gracza (np. zdrowie, ochrona itp.)
 
     def take_damage(self, amount):
-        """Zmniejsza zdrowie gracza o podaną wartość."""
-        self.current_health -= amount
-        if self.current_health < 0:
-            self.current_health = 0
-        if Test==true:
-            print(f"Gracz otrzymał {amount} obrażeń. Zdrowie: {self.current_health}/{self.max_health}")
+        """Zmniejsza zdrowie gracza o podaną wartość i sprawdza, czy gracz żyje."""
+        self.stats['health'] -= amount
+        if self.stats['health'] <= 0:
+            self.stats['health'] = 0
+            print("Gracz zginął. Koniec gry.")
+        else:
+            print(f"Gracz otrzymał {amount} obrażeń. Zdrowie: {self.stats['health']}/{self.stats['max_health']}")
 
     def heal(self, amount):
         """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
-        self.current_health += amount
-        if self.current_health > self.max_health:
-            self.current_health = self.max_health
-        if Test==true:
-            print(f"Gracz odzyskał {amount} zdrowia. Zdrowie: {self.current_health}/{self.max_health}")
+        self.stats['health'] += amount
+        if self.stats['health'] > self.stats['max_health']:
+            self.stats['health'] = self.stats['max_health']
+        print(f"Gracz odzyskał {amount} zdrowia. Zdrowie: {self.stats['health']}/{self.stats['max_health']}")
 
-    def is_alive(self):
-        """Sprawdza, czy gracz żyje."""
-        return self.current_health > 0
+    def calculate_temperature(self, ambient_temperature, clothing, is_near_fire):
+        """Oblicza efektywną temperaturę otoczenia na podstawie różnych czynników."""
+        protection = sum(clothing.values())
+        fire_bonus = 10 if is_near_fire else 0
 
-def update_temperature(self, ambient_temperature, is_near_fire):
-        """Aktualizuje temperaturę ciała gracza na podstawie otoczenia i ochrony przed zimnem."""
-        temperature_change = ambient_temperature - self.body_temperature
-        protection_effect = self.warmth_protection / 100
+        effective_temperature = ambient_temperature + protection + fire_bonus
+        print(f"Efektywna temperatura otoczenia: {effective_temperature}°C")
 
-        if is_near_fire:
-            self.body_temperature += 1.5  # Gracz ogrzewa się przy ognisku
-        else:
-            self.body_temperature += temperature_change * (1 - protection_effect)
-
-        if self.body_temperature < self.min_safe_temperature:
-            self.take_damage(1)  # Spadek zdrowia z powodu hipotermii
-
-        print(f"Temperatura ciała: {self.body_temperature:.1f}°C")
-
-    def equip_clothing(self, clothing_items):
-        """Wylicza całkowitą ochronę przed zimnem na podstawie założonych ubrań."""
-        self.warmth_protection = sum(clothing_items.values())
-        print(f"Ochrona przed zimnem: {self.warmth_protection}")
+        return effective_temperature
 
 # Przykład użycia z zewnętrznymi danymi o ubraniach
 if __name__ == "__main__":
@@ -57,7 +38,13 @@ if __name__ == "__main__":
         "hat": {"level_1": 10, "level_2": 15, "level_3": 20}
     }
 
-    player = Player(max_health=100, max_temperature=37.0)
+    # Statystyki gracza
+    player_stats = {
+        'health': 100,
+        'max_health': 100,
+    }
+
+    player = Player(stats=player_stats)
 
     # Gracz zakłada ubrania na poziomie 2
     equipped_clothing = {
@@ -66,4 +53,26 @@ if __name__ == "__main__":
         "gloves": clothing_data["gloves"]["level_2"],
         "hat": clothing_data["hat"]["level_2"]
     }
-    player.equip_clothing(equipped_clothing)
+
+    # Symulacja temperatury w lesie zimowym
+    ambient_temperature = -10.0  # Temperatura otoczenia w °C
+    is_near_fire = False  # Czy gracz jest przy ognisku
+
+    for _ in range(10):
+        effective_temp = player.calculate_temperature(ambient_temperature, equipped_clothing, is_near_fire)
+        if effective_temp < 0:
+            player.take_damage(5)  # Obrażenia za wychłodzenie
+
+    # Gracz ogrzewa się przy ognisku
+    print("Gracz zbliża się do ogniska...")
+    is_near_fire = True
+    for _ in range(5):
+        effective_temp = player.calculate_temperature(ambient_temperature, equipped_clothing, is_near_fire)
+        if effective_temp < 0:
+            player.take_damage(5)  # Obrażenia za wychłodzenie
+
+    # Wynik końcowy
+    if player.stats['health'] > 0:
+        print("Gracz przetrwał w zimowych warunkach.")
+    else:
+        print("Gracz zginął z powodu zimna.")
