@@ -17,11 +17,43 @@ StatsDict = {
     "Obecna Lokacja": Locations[0]
 }
 
+ItemsDict = {
+    "Karabin": {"Usable": 1, "Quantity": 0},
+    "Siekiera": {"Usable": 0, "Quantity": 0},
+    "Nóż": {"Usable": 0, "Quantity": 1},
+    "Rozpałka": {"Usable": 1, "Quantity": 2},
+    "Drewno": {"Usable": 0, "Quantity": 5},
+    "Porcja Jedzenia": {"Usable": 1, "Quantity": 3}
+}
+
+def ListEquipment(): #funkcja wypisuje wszystkie przedmioty, które gracz aktualnie posiada
+    print("Posiadane przedmioty:")
+    for item in ItemsDict.keys():
+        if(ItemsDict[item]["Quantity"]>0):
+            print(str(ItemsDict[item]["Quantity"])+"x", item)
+
+def ItemFunction(Item): #funkcja będzie wykonywać odpowiednią akcję zależnie od wybranego przedmiotu
+
+def UseItem(ItemName): #funkcja pozwala graczowi wybrać jaki z przedmiotów w ekwipunku użyć
+    if(ItemName in ItemsDict.keys() and ItemsDict[ItemName]["Usable"] == 1 and ItemsDict[ItemName]["Quantity"] > 0):
+        ItemFunction(ItemName)
+    elif(ItemName in ItemsDict.keys() and (ItemsDict[ItemName]["Usable"] == 0 or ItemsDict[ItemName]["Quantity"] < 1)):
+        print("Wybranego przedmiotu nie można teraz użyć.")
+        UseItem(0)
+    elif(ItemName == 0):
+        ListEquipment()
+        ChosenItem = str(input("Wpisz nazwę przedmiotu, który chcesz użyć."))
+        UseItem(ChosenItem)
+    else:
+        print("Wybrany przedmiot nie istnieje.")
+        UseItem(0)
+
 Player = Player(StatsDict)
 def TimeLog(): #log czasu, sformatowany
     print("Dzień: " + str(int(numpy.floor(StatsDict["Czas"])/1440) + 1))
     print("Godzina: " + str(int(numpy.floor(StatsDict["Czas"]/60))%24) + ":" + str(int(StatsDict["Czas"])%60))
 def Scavenge(): #przeszukiwanie, na podstawie obecnej lokacji
+
     ...
     print(StatsDict["Obecna Lokacja"].Loot[0])
     PassTime(60)
@@ -39,6 +71,7 @@ def StatsLog(): #log statystyk do konsoli
             print(stat + ': ' + StatsDict[stat].Name)
         else:
             print(stat + ': ' + str(StatsDict[stat]))
+
 
 def DisplayStartScreen(): #wyswietla informacje poczatkowe - instrukcje, lore...
     ...
@@ -58,9 +91,7 @@ while True:
         case '1':
             StatsLog()
         case '2':
-            ...
-            #LogEquipment()
-            UseItem()
+            UseItem(0)
         case '3':
             newLocationIndex = int(input())
             if Locations[newLocationIndex] != StatsDict["Obecna Lokacja"]:
