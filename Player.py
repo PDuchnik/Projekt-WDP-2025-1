@@ -4,19 +4,19 @@ class Player:
 
     def take_damage(self, amount):
         """Zmniejsza zdrowie gracza o podaną wartość i sprawdza, czy gracz żyje."""
-        self.stats['health'] -= amount
-        if self.stats['health'] <= 0:
-            self.stats['health'] = 0
+        self.stats['Zdrowie'] -= amount
+        if self.stats['Zdrowie'] <= 0:
+            self.stats['Zdrowie'] = 0
             print("Gracz zginął. Koniec gry.")
         else:
-            print(f"Gracz otrzymał {amount} obrażeń. Zdrowie: {self.stats['health']}/{self.stats['max_health']}")
+            print(f"Gracz otrzymał {amount} obrażeń. Zdrowie: {self.stats['Zdrowie']}/{self.stats['max_health']}")
 
     def heal(self, amount):
         """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
-        self.stats['health'] += amount
-        if self.stats['health'] > self.stats['max_health']:
-            self.stats['health'] = self.stats['max_health']
-        print(f"Gracz odzyskał {amount} zdrowia. Zdrowie: {self.stats['health']}/{self.stats['max_health']}")
+        self.stats['Zdrowie'] += amount
+        if self.stats['Zdrowie'] > self.stats['max_health']:
+            self.stats['Zdrowie'] = self.stats['max_health']
+        print(f"Gracz odzyskał {amount} zdrowia. Zdrowie: {self.stats['Zdrowie']}/{self.stats['max_health']}")
 
     def calculate_temperature(self, ambient_temperature, clothing, is_near_fire):
         """Oblicza efektywną temperaturę otoczenia na podstawie różnych czynników."""
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # Statystyki gracza
     player_stats = {
-        'health': 100,
+        'Zdrowie': 100,
         'max_health': 100,
     }
 
@@ -72,7 +72,7 @@ if __name__ == "__main__":
             player.take_damage(5)  # Obrażenia za wychłodzenie
 
     # Wynik końcowy
-    if player.stats['health'] > 0:
+    if player.stats['Zdrowie'] > 0:
         print("Gracz przetrwał w zimowych warunkach.")
     else:
         print("Gracz zginął z powodu zimna.")
