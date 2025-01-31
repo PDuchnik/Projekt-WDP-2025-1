@@ -5,29 +5,21 @@ https://docs.python.org/3/library/random.html
 https://www.geeksforgeeks.org/python-match-case-statement/
 
 
-Co mamy:
-- w sumie to nic
+Tytuł roboczy: Gra Surwiwalowa (wiem, 200IQ :3)
 
+Gra jest wzorowana na The Long Dark, odpowiednio uproszczona i uboższa.
+Gracz umieszczany jest w nieokreślonym regionie (ważne, że zimnym),
+jego jedynym celem jest przetrwać jak największą liczbę dni.
 
-Czego potrzebujemy:
-- zdecydować, jakie mechaniki gra w ogóle będzie miała
-- zdecydować, jak je zaimplementować
-- dodać prostą fabułę
+Rozgrywka ma formę wybierania prostych opcji spośród podanych, które
+wraz z upływem czasu skutkują modyfikacją statystyk gracza, położenia,
+stanu ekwipunku...
 
+Gracz zarządza podstawowymi statystykami, spośród których najważniejsze
+jest HP - po spadnięciu do 0, gra dobiega końca.
 
-Mechaniki:
-Ekwipunek: karabin, siekiera, noz, materialy do naprawy, jedzenie, rozpalanie ognia
+Gracz może wybrać spośród różnych aktywności, które w danym momencie
+uważa za stosowne - polowanie, przejście do innej lokacji, odpoczynek...
 
-Lokacje: tereny zabudowane, miejsce do polowania, miejsce do zbierania drewna
-Aktywnosci:
-przemieszcanie sie, rozpalanie ognia, przeszukiwanie, spanie, uzywanie przedmiotow
+Może również używać przedmiotów - opatrunek, rozpalenie ogniska...
 
-ubrania stopy, nogi, wewnetrzna gora, zewnetrzna gora, glowa, rece
-
-urazy
-
-Statystyki hp, zmeczenie, temperatura, glod, waga
-
-dlaczego gracz przegral
-
--uczenie sie 
