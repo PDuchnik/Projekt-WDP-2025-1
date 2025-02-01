@@ -15,6 +15,14 @@ StatsDict = {
     "Obecna Lokacja": Locations[0]
 }
 
+def ChangeTemperature():
+    if(StatsDict["Temperatura"]>=(-5)):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([0,-1,-2,-3,-4,-5])
+    elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura"]>-20):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0,-1,-2,-3,-4,-5])
+    else:
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0])
+
 def Scavenge(time = 1):
     ...
     print(StatsDict["Obecna Lokacja"].Loot[0])
