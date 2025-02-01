@@ -25,6 +25,13 @@ ItemsDict = {
     "Drewno": {"Usable": 0, "Quantity": 5},
     "Porcja Jedzenia": {"Usable": 1, "Quantity": 3}
 }
+def ChangeTemperature():
+    if(StatsDict["Temperatura"]>=(-5)):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([0,-1,-2,-3,-4,-5])
+    elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura"]>-20):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0,-1,-2,-3,-4,-5])
+    else:
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0])
 
 def ListEquipment(): #funkcja wypisuje wszystkie przedmioty, które gracz aktualnie posiada
     print("Posiadane przedmioty:")
@@ -33,7 +40,7 @@ def ListEquipment(): #funkcja wypisuje wszystkie przedmioty, które gracz aktual
             print(str(ItemsDict[item]["Quantity"])+"x", item)
 
 def ItemFunction(Item): #funkcja będzie wykonywać odpowiednią akcję zależnie od wybranego przedmiotu
-
+    ...
 def UseItem(ItemName): #funkcja pozwala graczowi wybrać jaki z przedmiotów w ekwipunku użyć
     if(ItemName in ItemsDict.keys() and ItemsDict[ItemName]["Usable"] == 1 and ItemsDict[ItemName]["Quantity"] > 0):
         ItemFunction(ItemName)
@@ -69,6 +76,8 @@ def StatsLog(): #log statystyk do konsoli
     for stat in StatsDict:
         if type(StatsDict[stat]) == type(StatsDict["Obecna Lokacja"]):
             print(stat + ': ' + StatsDict[stat].Name)
+        elif stat == "Czas":
+            TimeLog()
         else:
             print(stat + ': ' + str(StatsDict[stat]))
 
@@ -78,8 +87,11 @@ def DisplayStartScreen(): #wyswietla informacje poczatkowe - instrukcje, lore...
 def UseItem():
     ...
 def MoveLocation(newLocationIndex): #przemieszczenie do podanej lokacji
-    StatsDict["Obecna Lokacja"] = Locations[newLocationIndex]
-    PassTime(60)
+    if Locations[newLocationIndex] != StatsDict["Obecna Lokacja"]:
+        StatsDict["Obecna Lokacja"] = Locations[newLocationIndex]
+        PassTime(60)
+    else:
+        ...
 
 def Rest(hours): #odpoczynek trwajacy podana liczbe godzin
     PassTime(hours*60, -1)
@@ -94,11 +106,7 @@ while True:
             UseItem(0)
         case '3':
             newLocationIndex = int(input())
-            if Locations[newLocationIndex] != StatsDict["Obecna Lokacja"]:
-                MoveLocation(newLocationIndex)
-                print(StatsDict["Obecna Lokacja"].Name)
-            else:
-                ...
+            MoveLocation(newLocationIndex)
         case '4':
             Scavenge()
         case '5':
