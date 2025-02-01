@@ -1,7 +1,13 @@
+import random
+
 class Player:
     def __init__(self, stats):
         self.stats = stats  # Słownik ze statystykami gracza (np. zdrowie, ochrona itp.)
-
+        self.time_multiplier = 1  
+        self.hunting_xp = 0  # Doświadczenie polowania
+        self.exploration_xp = 0  # Doświadczenie eksploracji
+        self.inventory = []  # Tymczasowy ekwipunek gracza
+        
     def take_damage(self, amount):
         """Zmniejsza zdrowie gracza o podaną wartość i sprawdza, czy gracz żyje."""
         self.stats['Zdrowie'] -= amount
@@ -27,6 +33,61 @@ class Player:
         print(f"Efektywna temperatura otoczenia: {effective_temperature}°C")
 
         return effective_temperature
+    def reduce_stamina(self, amount):
+        """Zmniejsza poziom staminy gracza po wykonaniu akcji."""
+        self.stats['stamina'] -= amount
+        if self.stats['stamina'] < 0:
+            self.stats['stamina'] = 0
+            print("Gracz stracił przytomność z powodu wyczerpania i musi odpocząć!")
+            self.forced_rest()
+        elif self.stats['stamina'] < self.stats['max_stamina'] * 0.25:
+            print("Gracz jest zmęczony, akcje zajmują więcej czasu.")
+            self.time_multiplier = 2  # --- ZMIANA MNOŻNIKA CZASU ---
+        else:
+            self.time_multiplier = 1  # --- RESET MNOŻNIKA CZASU ---
+        print(f"Gracz stracił {amount} staminy. Stamina: {self.stats['stamina']}/{self.stats['max_stamina']}")
+
+    def restore_stamina(self, amount, forced=False):
+        """Odnawia staminę gracza podczas odpoczynku lub snu."""
+        if forced:
+            amount /= 2  # Wymuszony odpoczynek odzyskuje mniej staminy
+        self.stats['stamina'] += amount
+        if self.stats['stamina'] > self.stats['max_stamina']:
+            self.stats['stamina'] = self.stats['max_stamina']
+        print(f"Gracz odzyskał {amount} staminy. Stamina: {self.stats['stamina']}/{self.stats['max_stamina']}")
+        if self.stats['stamina'] >= self.stats['max_stamina'] * 0.25:
+            self.time_multiplier = 1  # --- RESET MNOŻNIKA CZASU PO ODZYSKANIU STAMINY ---
+    
+    def forced_rest(self):
+        """Gracz traci przytomność i zostaje zmuszony do odpoczynku."""
+        self.restore_stamina(self.stats['max_stamina'] * 0.5, forced=True)
+    def explore(self, location):
+        """Przeprowadza eksplorację i przyznaje łupy odpowiednie dla danej lokalizacji."""
+        loot_table = {
+            "urban": loot_table_urban_exploration,
+            "forest": loot_table_forest_exploration,
+            "hunting": loot_table_hunting_exploration
+        }.get(location, [])
+        
+        print(f"Gracz eksploruje {location}...")
+        for item, chance in loot_table:
+            if random.randint(1, 100) <= chance:
+                self.inventory.append(item)
+                print(f"Znaleziono: {item}")
+
+    def hunt(self, location):
+        """Przeprowadza polowanie i przyznaje łupy odpowiednie dla danej lokalizacji."""
+        loot_table = {
+            "urban": loot_table_urban_hunting,
+            "forest": loot_table_forest_hunting,
+            "hunting": loot_table_hunting_hunting
+        }.get(location, [])
+
+        print(f"Gracz poluje w {location}...")
+        for item, chance in loot_table:
+            if random.randint(1, 100) <= chance:
+                self.inventory.append(item)
+                print(f"Znaleziono: {item}")
 
 # Przykład użycia z zewnętrznymi danymi o ubraniach
 if __name__ == "__main__":
@@ -40,8 +101,10 @@ if __name__ == "__main__":
 
     # Statystyki gracza
     player_stats = {
-        'Zdrowie': 100,
+        'health': 100,
         'max_health': 100,
+        'stamina': 100,  
+        'max_stamina': 100 
     }
 
     player = Player(stats=player_stats)
@@ -62,6 +125,7 @@ if __name__ == "__main__":
         effective_temp = player.calculate_temperature(ambient_temperature, equipped_clothing, is_near_fire)
         if effective_temp < 0:
             player.take_damage(5)  # Obrażenia za wychłodzenie
+            player.reduce_stamina(5)  # --- Utrata staminy za przebywanie w zimnie ---
 
     # Gracz ogrzewa się przy ognisku
     print("Gracz zbliża się do ogniska...")
@@ -70,9 +134,54 @@ if __name__ == "__main__":
         effective_temp = player.calculate_temperature(ambient_temperature, equipped_clothing, is_near_fire)
         if effective_temp < 0:
             player.take_damage(5)  # Obrażenia za wychłodzenie
+        player.restore_stamina(10)  # --- Regeneracja staminy przy ognisku ---
 
     # Wynik końcowy
-    if player.stats['Zdrowie'] > 0:
+    if player.stats['health'] > 0:
         print("Gracz przetrwał w zimowych warunkach.")
     else:
         print("Gracz zginął z powodu zimna.")
+# Listy łupów dla różnych obszarów - eksploracja (Przykładowe jak będzie inventory to zmieni się)
+loot_table_urban_exploration = [
+    ("Puszka jedzenia", 50),
+    ("Bateria", 30),
+    ("Narzędzie", 20),
+    ("Ubrania", 40),
+    ("Lekarstwa", 25)
+]
+
+loot_table_forest_exploration = [
+    ("Jagody", 60),
+    ("Patyki", 70),
+    ("Zioła lecznicze", 30),
+    ("Grzyby", 40),
+    ("Kamienie", 50)
+]
+
+loot_table_hunting_exploration = [
+    ("Ślady zwierząt", 50),
+    ("Zniszczone sidła", 30),
+    ("Kości", 20)
+]
+
+# Listy łupów dla różnych obszarów - polowanie
+loot_table_urban_hunting = [
+    ("Szczur", 50),
+    ("Gołąb", 30),
+    ("Zepsute mięso", 20)
+]
+
+loot_table_forest_hunting = [
+    ("Surowe mięso", 50),
+    ("Kości", 40),
+    ("Skóra", 30),
+    ("Rogi", 20),
+    ("Tłuszcz", 35)
+]
+
+loot_table_hunting_hunting = [
+    ("Duże surowe mięso", 50),
+    ("Gruba skóra", 40),
+    ("Kły", 30),
+    ("Trofeum", 20)
+
