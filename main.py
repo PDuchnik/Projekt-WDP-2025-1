@@ -17,6 +17,14 @@ StatsDict = {
     "Obecna Lokacja": Locations[0]
 }
 
+def ChangeTemperature():
+    if(StatsDict["Temperatura"]>=(-5)):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([0,-1,-2,-3,-4,-5])
+    elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura"]>-20):
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0,-1,-2,-3,-4,-5])
+    else:
+        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0])
+
 ItemsDict = {
     "Karabin": {"Usable": 1, "Quantity": 0},
     "Siekiera": {"Usable": 0, "Quantity": 0},
@@ -60,7 +68,6 @@ def TimeLog(): #log czasu, sformatowany
     print("Dzień: " + str(int(numpy.floor(StatsDict["Czas"])/1440) + 1))
     print("Godzina: " + str(int(numpy.floor(StatsDict["Czas"]/60))%24) + ":" + str(int(StatsDict["Czas"])%60))
 def Scavenge(): #przeszukiwanie, na podstawie obecnej lokacji
-
     ...
     print(StatsDict["Obecna Lokacja"].Loot[0])
     PassTime(60)
