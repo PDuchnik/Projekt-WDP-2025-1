@@ -8,12 +8,15 @@ StatsDict = {
     "Zdrowie": 100,
     "Zmęczenie": 120,
     "Temperatura": 0,
-    "Głód": 100,
-    "Pragnienie": 100,
+    "Głód": 120,
+    "Pragnienie": 60,
     "Obciążenie": 0,
     "Czas": 0,
     "Obecna Lokacja": Locations[0],
-    "Krwawienie": False
+    "Krwawienie": False,
+    "Zbieractwo": 0,
+    "Polowanie": 0,
+    "Ogień": Locations[0].Fire
 }
 Inventory = {
     "Karabin": Item(True, False, itemFuncs.RifleFunction, 0, 5),
@@ -28,22 +31,24 @@ Inventory = {
     "Amunicja": Item(False, False, None, 0, 0.1),
     "Gotowane Mięso": Item(True, False, itemFuncs.PreppedMeatFunction, 0, 1)
 }
+def Die():
+    if StatsDict["Krwawienie"]:
+        print("Zgon z powodu krwawienia")
+    elif StatsDict["Temperatura"] == 0:
+        print("Zgon z powodu zimna")
+    elif StatsDict["Pragnienie"] == 0:
+        print("Zgon z powodu pragnienia")
+    elif StatsDict["Głód"] == 0:
+        print("Zgon z powodu głodu")
 def HPDown(value):
     """Zmniejsza zdrowie gracza o podaną wartość i sprawdza, czy gracz żyje."""
-    StatsDict['Zdrowie'] -= value
-    if StatsDict['Zdrowie'] <= 0:
-        StatsDict['Zdrowie'] = 0
-        print("Gracz zginął. Koniec gry.")
-    else:
-        print(f"Gracz otrzymał {value} obrażeń. Zdrowie: {StatsDict['Zdrowie']}/{StatsDict['max_health']}")
+    if value >= StatsDict["Zdrowie"]:
+        Die()
+    StatsDict["Zdrowie"] -= value
 
 def HPUp(value):
     """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
-    StatsDict['Zdrowie'] += value
-    if StatsDict['Zdrowie'] > StatsDict['max_health']:
-        StatsDict['Zdrowie'] = StatsDict['max_health']
-    print(f"Gracz odzyskał {value} zdrowia. Zdrowie: {StatsDict['Zdrowie']}/{StatsDict['max_health']}")
-
+    StatsDict['Zdrowie'] += min(100 - StatsDict["Zdrowie"], value)
 def GetTemperature(self, ambient_temperature, clothing, is_near_fire):
     """Oblicza efektywną temperaturę otoczenia na podstawie różnych czynników."""
     protection = sum(clothing.values())
@@ -64,22 +69,37 @@ def TimeLog(): #log czasu, sformatowany
     print("Dzień: " + str(int(numpy.floor(StatsDict["Czas"])/1440) + 1))
     print("Godzina: " + str(int(numpy.floor(StatsDict["Czas"]/60))%24) + ":" + str(int(StatsDict["Czas"])%60))
 def Scavenge(): #przeszukiwanie, na podstawie obecnej lokacji
+    itemNo = 1 if StatsDict["Zbieractwo"] <35 else 2
     if (StatsDict["Obecna Lokacja"] == Locations[3] or StatsDict["Obecna Lokacja"] == Locations[4]) and Inventory["Siekiera"].Quantity == 0:
-        ...
+        Inventory["Drewno"].Quantity += itemNo
+        InventoryLog()
+        PassTime(60)
     else:
-        loot = random.choices(population=list(Inventory.keys()), weights=StatsDict["Obecna Lokacja"].Loot, k=2)
+        loot = random.choices(population=list(Inventory.keys()), weights=StatsDict["Obecna Lokacja"].Loot, k=itemNo)
         for item in loot:
             Inventory[item].Quantity += 1
         InventoryLog()
         PassTime(60)
+    StatsDict["Zbieractwo"] += 1
 def PassTime(timeToPass:int, fatigueModifier = 1): #zwieksza czas, w minutach
-    StatsDict["Czas"] += timeToPass
+    if StatsDict["Głód"] > 0 and StatsDict["Pragnienie"] > 0 and StatsDict["Krwawienie"] == False and StatsDict["Temperatura"] > 0:
+        HPUp(timeToPass*0.1)
+    if StatsDict["Głód"] == 0: HPDown(timeToPass / 21.6)
+    if StatsDict["Pragnienie"] == 0: HPDown(timeToPass / 14.4)
+    if StatsDict["Temperatura"] == 0: HPDown(timeToPass/7.2)
+    if StatsDict["Krwawienie"]: HPDown(timeToPass / 1.2)
+    StatsDict["Głód"] -= min(StatsDict["Głód"], timeToPass/6)
+    StatsDict["Pragnienie"] -= min(StatsDict["Pragnienie"], timeToPass/6)
+    StatsDict["Temperatura"] -= min(StatsDict["Temperatura"], timeToPass/6)
+    
+
     if fatigueModifier > 0:
         StatsDict["Zmęczenie"] -= min(StatsDict["Zmęczenie"], (timeToPass/6) * fatigueModifier)
     else:
         StatsDict["Zmęczenie"] += min(120-StatsDict["Zmęczenie"], (timeToPass/6) * -fatigueModifier)
     for location in Locations:
-        location.Fire -= timeToPass
+        location.Fire -= min(location.Fire, timeToPass)
+    StatsDict["Czas"] += timeToPass
     TimeLog()
 def StatsLog(): #log statystyk do konsoli
     for stat in StatsDict:
@@ -91,15 +111,22 @@ def StatsLog(): #log statystyk do konsoli
             print(stat + ': ' + str(StatsDict[stat]))
 def UseItem(itemIndex:int):
     itemName = list(Inventory.keys())[itemIndex]
-    Inventory[itemName].Function(StatsDict, Inventory, PassTime)
+    if Inventory[itemName].Quantity != 0:
+        Inventory[itemName].Function(StatsDict, Inventory, PassTime)
+    else:
+        print("Nie posiadasz tego przedmiotu")
 def MoveLocation(newLocationIndex): #przemieszczenie do podanej lokacji
+    if StatsDict["Zmęczenie"] == 0:
+        print("Jesteś zbyt zmęczony")
+        return
     if Locations[newLocationIndex] != StatsDict["Obecna Lokacja"]:
         StatsDict["Obecna Lokacja"] = Locations[newLocationIndex]
         if random.choice(range(0,4)) == 0:
             AnimalEvent()
         PassTime(60)
+        StatsDict["Ogień"] = StatsDict["Obecna Lokacja"].Fire
     else:
-        ...
+        print("Znajdujesz się w tej lokacji.")
 
 def Rest(hours): #odpoczynek trwajacy podana liczbe godzin
     PassTime(hours*60, -1)
@@ -142,7 +169,7 @@ def AnimalEvent():
                     HPDown(random.choice(range(10,26)))
                     StatsDict["Krwawienie"] = random.choice([True, False])
                 else:
-                    ...
+                    print("Obrona udała się.")
         case '2':
             if Inventory["Siekiera"].Quantity == 0:
                 AnimalEvent()
@@ -151,13 +178,13 @@ def AnimalEvent():
                     HPDown(random.choice(range(25,50)))
                     StatsDict["Krwawienie"] = random.choice([True, False])
                 else:
-                    ...
+                    print("Obrona udała się.")
         case '3':
             if random.choice(range(0, 100)) < 70:
                 HPDown(random.choice(range(40,60)))
                 StatsDict["Krwawienie"] = True
             else:
-                ...
+                print("Obrona udała się.")
         case _:
             AnimalEvent()
     

@@ -52,7 +52,7 @@ def UseItem1(ItemName): #funkcja pozwala graczowi wybrać jaki z przedmiotów w 
         print("Wybrany przedmiot nie istnieje.")
         UseItem(0)
 
-while True:
+while StatsDict["Zdrowie"]>0:
     LogOptions()
     actionIndex = input()
     match actionIndex:
