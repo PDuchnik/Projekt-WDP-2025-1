@@ -40,7 +40,9 @@ zawierającym pliki używane przez grę i zainstalować pakiety z requirements.t
 
 Grę uruchamiamy plikiem main.py.
 
-`python main.py`
+`python main.py -d`
+
+-d - argument zwiększający poziom trudności.
 
 W grze wybieramy opcje wprowadzając odpowiednie liczby.
 
