@@ -120,7 +120,7 @@ def StatsLog(): #log statystyk do konsoli
             TimeLog()
         else:
             print(stat + ': ' + str(StatsDict[stat]))
-def UseItem(itemIndex:int):
+def UseItem(itemIndex:int): #funkcja pozwalająca na uzywanie przedmiotow
     itemName = list(Inventory.keys())[itemIndex]
     if Inventory[itemName].Quantity != 0:
         if Inventory[itemName].IsClothing:
@@ -129,7 +129,7 @@ def UseItem(itemIndex:int):
             Inventory[itemName].Function(StatsDict, Inventory, PassTime)
     else:
         print("Nie posiadasz tego przedmiotu")
-def DropItem(itemIndex:int):
+def DropItem(itemIndex:int): #funkcja pozwalajaca na upuszczanie przedmiotow
     itemName = list(Inventory.keys())[itemIndex]
     Inventory[itemName].Quantity -= min(Inventory[itemName].Quantity, 1)
 def MoveLocation(newLocationIndex): #przemieszczenie do podanej lokacji
@@ -150,13 +150,13 @@ def MoveLocation(newLocationIndex): #przemieszczenie do podanej lokacji
 def Rest(hours): #odpoczynek trwajacy podana liczbe godzin
     PassTime(hours*60, -1)
 
-def LocationsLog():
+def LocationsLog(): #log lokacji do konsoli
     i = 0
     for loc in Locations:
         print(f"{i+1}. {Locations[i].Name}")
         i += 1
 
-def OptionsLog():
+def OptionsLog(): #log opcji do konsoli
     print("1. Pokaż statystyki")
     print("2. Użyj przedmiotu")
     print("3. Przejdź do innej lokacji")
@@ -164,9 +164,9 @@ def OptionsLog():
     print("5. Odpocznij")
     print("6. Pokaż ekwipunek")
     print("7. Upuść przedmiot")
-def PrintEventMessage():
-    rifle = "brak"
-    hatchet = "brak"
+def PrintEventMessage(): #funkcja pomocnicza dla AnimalEvent()
+    rifle = "(brak)"
+    hatchet = "(brak)"
     if Inventory["Karabin"].Quantity != 0:
         rifle = ""
     if Inventory["Siekiera"].Quantity != 0:
@@ -174,10 +174,10 @@ def PrintEventMessage():
     print("Widzisz wilka kierującego się w twoją stronę.")
     print("Jeśli sie nie obronisz, zaatakuje cię.")
     print("Wybierz przedmiot do obrony:")
-    print(f"1. Karabin ({rifle})")
-    print(f"2. Siekiera ({hatchet})")
+    print(f"1. Karabin {rifle}")
+    print(f"2. Siekiera {hatchet}")
     print("3. Desperacja")
-def AnimalEvent():
+def AnimalEvent(): #funkcja reprezentująca zagrożenie spotkane na drodze
     PrintEventMessage()
     match input():
         case '1':
@@ -208,7 +208,7 @@ def AnimalEvent():
         case _:
             AnimalEvent()
 
-def ChangeTemperature():
+def ChangeTemperature(): #fukcja odpowiedzialna za zmianę temperatury otoczenia
     if(StatsDict["Temperatura otoczenia"]>=(-5)):
         StatsDict["Temperatura otoczenia"] = StatsDict["Temperatura otoczenia"] + random.choice([0,-1,-2,-3,-4,-5])
     elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura otoczenia"]>-20):
