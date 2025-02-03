@@ -1,6 +1,5 @@
 import numpy
 from collections.abc import Callable
-
 import ItemFunctions
 from Item import Item
 from MapLocation import MapLocation
@@ -8,6 +7,7 @@ from MapLocation import Locations
 from ClothingLayer import ClothingLayer
 import ItemFunctions as itemFuncs
 import random
+from Player import DropItem
 from Player import StatsDict
 from Player import Inventory
 from Player import InventoryLog
@@ -19,6 +19,18 @@ from Player import UseItem
 from Player import LocationsLog
 from Player import MoveLocation
 from Player import LogOptions
+from Player import GetWeight
+from Player import DiffSettings
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--diff", "-d", help="poziom trudnosci", action="store_true")
+args = parser.parse_args()
+
+if args.diff:
+    DiffSettings["TempThreshold"] = -5
+    DiffSettings["MaxHP"] = 80
 
 def ChangeTemperature():
     if(StatsDict["Temperatura"]>=(-5)):
@@ -28,13 +40,6 @@ def ChangeTemperature():
     else:
         StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0])
 
-def ChangeTemperature():
-    if(StatsDict["Temperatura"]>=(-5)):
-        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([0,-1,-2,-3,-4,-5])
-    elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura"]>-20):
-        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0,-1,-2,-3,-4,-5])
-    else:
-        StatsDict["Temperatura"] = StatsDict["Temperatura"] + random.choice([5,4,3,2,1,0])
 
 
 
@@ -53,6 +58,7 @@ def UseItem1(ItemName): #funkcja pozwala graczowi wybrać jaki z przedmiotów w 
         UseItem(0)
 
 while StatsDict["Zdrowie"]>0:
+    StatsDict["Obciążenie"] = GetWeight()
     LogOptions()
     actionIndex = input()
     match actionIndex:
@@ -60,11 +66,11 @@ while StatsDict["Zdrowie"]>0:
             StatsLog()
         case '2':
             InventoryLog()
-            itemIndex = int(input()) - 1
+            itemIndex = int(input("Wybierz przedmiot")) - 1
             UseItem(itemIndex)
         case '3':
             LocationsLog()
-            newLocationIndex = int(input())-1
+            newLocationIndex = int(input("Wybierz lokację"))-1
             MoveLocation(newLocationIndex)
         case '4':
             if (StatsDict["Obecna Lokacja"] == Locations[3] or StatsDict["Obecna Lokacja"] == Locations[4]) and Inventory["Siekiera"].Quantity == 0:
@@ -73,9 +79,10 @@ while StatsDict["Zdrowie"]>0:
                 Scavenge()
         case '5':
             ...
-            hoursToRest = int(input())
-            Rest(hoursToRest)
+            Rest(int(input("Wybierz liczbę godzin")))
         case '6':
             InventoryLog()
+        case '7':
+            DropItem(int(input("Wybierz przedmiot")))
         case _:
             pass

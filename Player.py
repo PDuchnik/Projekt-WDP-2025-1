@@ -4,10 +4,16 @@ import ItemFunctions as itemFuncs
 import numpy
 import random
 
+DiffSettings = {
+    "TempThreshold": -7,
+    "MaxHP": 100
+}
+
 StatsDict = {
-    "Zdrowie": 100,
+    "Zdrowie": DiffSettings["MaxHP"],
     "Zmęczenie": 120,
     "Temperatura": 0,
+    "Temperatura otoczenia": 0,
     "Głód": 120,
     "Pragnienie": 60,
     "Obciążenie": 0,
@@ -29,8 +35,13 @@ Inventory = {
     "Woda": Item(True, False, itemFuncs.WaterFunction, 0, 1),
     "Siekiera": Item(False, False, None, 0, 2.5),
     "Amunicja": Item(False, False, None, 0, 0.1),
-    "Gotowane Mięso": Item(True, False, itemFuncs.PreppedMeatFunction, 0, 1)
+    "Gotowane Mięso": Item(True, False, itemFuncs.PreppedMeatFunction, 0, 1),
 }
+def GetWeight():
+    res = 0
+    for i in Inventory:
+        res += Inventory[i].Quantity*Inventory[i].Weight
+    return res
 def Die():
     if StatsDict["Krwawienie"]:
         print("Zgon z powodu krwawienia")
@@ -48,7 +59,7 @@ def HPDown(value):
 
 def HPUp(value):
     """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
-    StatsDict['Zdrowie'] += min(100 - StatsDict["Zdrowie"], value)
+    StatsDict['Zdrowie'] += min(DiffSettings["MaxHP"] - StatsDict["Zdrowie"], value)
 def GetTemperature(self, ambient_temperature, clothing, is_near_fire):
     """Oblicza efektywną temperaturę otoczenia na podstawie różnych czynników."""
     protection = sum(clothing.values())
@@ -88,17 +99,21 @@ def PassTime(timeToPass:int, fatigueModifier = 1): #zwieksza czas, w minutach
     if StatsDict["Pragnienie"] == 0: HPDown(timeToPass / 14.4)
     if StatsDict["Temperatura"] == 0: HPDown(timeToPass/7.2)
     if StatsDict["Krwawienie"]: HPDown(timeToPass / 1.2)
+
     StatsDict["Głód"] -= min(StatsDict["Głód"], timeToPass/6)
     StatsDict["Pragnienie"] -= min(StatsDict["Pragnienie"], timeToPass/6)
-    StatsDict["Temperatura"] -= min(StatsDict["Temperatura"], timeToPass/6)
-    
+
+    if StatsDict["Temperatura otoczenia"] <DiffSettings["TempThreshold"]:
+        StatsDict["Temperatura"] -= min(StatsDict["Temperatura"], timeToPass/6)
 
     if fatigueModifier > 0:
         StatsDict["Zmęczenie"] -= min(StatsDict["Zmęczenie"], (timeToPass/6) * fatigueModifier)
     else:
         StatsDict["Zmęczenie"] += min(120-StatsDict["Zmęczenie"], (timeToPass/6) * -fatigueModifier)
+
     for location in Locations:
         location.Fire -= min(location.Fire, timeToPass)
+
     StatsDict["Czas"] += timeToPass
     TimeLog()
 def StatsLog(): #log statystyk do konsoli
@@ -112,18 +127,26 @@ def StatsLog(): #log statystyk do konsoli
 def UseItem(itemIndex:int):
     itemName = list(Inventory.keys())[itemIndex]
     if Inventory[itemName].Quantity != 0:
-        Inventory[itemName].Function(StatsDict, Inventory, PassTime)
+        if Inventory[itemName].IsClothing:
+            Inventory[itemName.Function(itemName)]
+        else:
+            Inventory[itemName].Function(StatsDict, Inventory, PassTime)
     else:
         print("Nie posiadasz tego przedmiotu")
+def DropItem(itemIndex:int):
+    itemName = list(Inventory.keys())[itemIndex]
+    Inventory[itemName].Quantity -= min(Inventory[itemName].Quantity, 1)
 def MoveLocation(newLocationIndex): #przemieszczenie do podanej lokacji
     if StatsDict["Zmęczenie"] == 0:
-        print("Jesteś zbyt zmęczony")
+        print("Zmęczenie nie pozwala na przemieszczanie.")
         return
+    if StatsDict["Obciążenie"] > 40:
+        print("Obciążenie nie pozwala na przemieszczanie.")
     if Locations[newLocationIndex] != StatsDict["Obecna Lokacja"]:
         StatsDict["Obecna Lokacja"] = Locations[newLocationIndex]
         if random.choice(range(0,4)) == 0:
             AnimalEvent()
-        PassTime(60)
+        PassTime(60, 1.5)
         StatsDict["Ogień"] = StatsDict["Obecna Lokacja"].Fire
     else:
         print("Znajdujesz się w tej lokacji.")
@@ -187,4 +210,11 @@ def AnimalEvent():
                 print("Obrona udała się.")
         case _:
             AnimalEvent()
-    
+
+def ChangeTemperature():
+    if(StatsDict["Temperatura otoczenia"]>=(-5)):
+        StatsDict["Temperatura otoczenia"] = StatsDict["Temperatura otoczenia"] + random.choice([0,-1,-2,-3,-4,-5])
+    elif(StatsDict["Temperatura"]<(-5) and StatsDict["Temperatura otoczenia"]>-20):
+        StatsDict["Temperatura otoczenia"] = StatsDict["Temperatura otoczenia"] + random.choice([5,4,3,2,1,0,-1,-2,-3,-4,-5])
+    else:
+        StatsDict["Temperatura otoczenia"] = StatsDict["Temperatura otoczenia"] + random.choice([5,4,3,2,1,0])
