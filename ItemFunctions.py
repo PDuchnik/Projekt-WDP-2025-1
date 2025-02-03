@@ -1,6 +1,7 @@
 import random
 
 from MapLocation import MapLocation
+#funkcje przypisywane do odpowiednich przedmiotow
 def WoodFunction(stats:dict, inventory:dict, PassTime):
     inventory["Drewno"].Quantity -= 1
     stats["Obecna Lokacja"].Fire += 30

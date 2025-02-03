@@ -23,3 +23,15 @@ uważa za stosowne - polowanie, przejście do innej lokacji, odpoczynek...
 
 Może również używać przedmiotów - opatrunek, rozpalenie ogniska...
 
+# **Instrukcja użytkowania**
+
+Aby grę dało się uruchomić, należy postawić środowisko wirtualne w folderze
+zawierającym pliki używane przez grę i zainstalować pakiety z requirements.txt.
+
+`cd <ścieżka do plików gry>`
+
+`python3 -m venv <wybrana nazwa środowiska>`
+
+`source <wybrana nazwaśrodowiska>/bin/activate`
+
+`py -m pip install -r requirements.txt`

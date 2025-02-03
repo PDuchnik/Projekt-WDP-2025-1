@@ -1,5 +1,5 @@
 from collections.abc import Callable
-class Item:
+class Item: #klasa reprezentujaca przedmioty
     IsConsumable: bool
     IsClothing: bool
     Function: Callable

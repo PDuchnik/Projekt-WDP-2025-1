@@ -1,5 +1,5 @@
 
-class MapLocation:
+class MapLocation: #klasa reprezentujaca lokacje w grze
     Name: str
     Coordinates: tuple[int, int] #wspolrzedne sluzace do obliczania odleglosci miedzy lokacjami
     Loot:tuple #typy takie jak tereny zabudowane, strefa do polowania...
@@ -12,14 +12,16 @@ class MapLocation:
         self.Temperature = _temperature
         self.Fire = 0
 
-WellingtonLoot = [0, 0.1, 0, 0, 0.1, 0.3, 0.2, 0.3, 0.05, 0.05]
-SkiResortLoot = [0, 0.15, 0, 0, 0.2, 0.3, 0.3, 0.2, 0.1, 0.05]
-GasStationLoot = [0.1, 0.2, 0, 0, 0.1, 0.2, 0.1, 0.3, 0.1, 0.15]
-WildernessLootGeneric = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+
+     #listy reprezentujace prawdpodobienstwo znalezienia przedmiotu w danej lokacji (indeksowane jak list(Invetory.values())
+WellingtonLoot = [0, 0.1, 0, 0, 0.1, 0.3, 0.2, 0.3, 0.05, 0.05, 0]
+SkiResortLoot = [0, 0.15, 0, 0, 0.2, 0.3, 0.3, 0.2, 0.1, 0.05, 0]
+GasStationLoot = [0.1, 0.2, 0, 0, 0.1, 0.2, 0.1, 0.3, 0.1, 0.15, 0]
+WildernessLootGeneric = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
 
 Locations = (MapLocation("Wellington", (10,10), WellingtonLoot, 0),
              MapLocation("Ośrodek narciarski", (100,20), SkiResortLoot, 0),
              MapLocation("Stacja benzynowa", (-40, 50), GasStationLoot, 0),
              MapLocation("Kanion", (35, 100), WildernessLootGeneric, -30),
              MapLocation("Jezioro", (-35,0), WildernessLootGeneric, -15),)
-
+            #krotka zawierajaca obiekty reprezentujace lokacje

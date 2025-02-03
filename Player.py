@@ -4,11 +4,14 @@ import ItemFunctions as itemFuncs
 import numpy
 import random
 
+
+#slownik przechowywyjacy wartosci zalezne od poziomu trudnosci
 DiffSettings = {
     "TempThreshold": -7,
     "MaxHP": 100
 }
 
+#slownik z glownymi statystykami
 StatsDict = {
     "Zdrowie": DiffSettings["MaxHP"],
     "Zmęczenie": 120,
@@ -24,6 +27,8 @@ StatsDict = {
     "Polowanie": 0,
     "Ogień": Locations[0].Fire
 }
+
+#slownik reprezentujacy ekwipunek
 Inventory = {
     "Karabin": Item(True, False, itemFuncs.RifleFunction, 0, 5),
     "Apteczka": Item(True, False, itemFuncs.MedkitFunction, 0, 1),
@@ -37,12 +42,12 @@ Inventory = {
     "Amunicja": Item(False, False, None, 0, 0.1),
     "Gotowane Mięso": Item(True, False, itemFuncs.PreppedMeatFunction, 0, 1),
 }
-def GetWeight():
+def GetWeight(): #funkcja zwracajaca obciazenie
     res = 0
     for i in Inventory:
         res += Inventory[i].Quantity*Inventory[i].Weight
     return res
-def Die():
+def Die(): #funkcja odpowiedzialna za zakonczenie gry
     if StatsDict["Krwawienie"]:
         print("Zgon z powodu krwawienia")
     elif StatsDict["Temperatura"] == 0:
@@ -51,25 +56,15 @@ def Die():
         print("Zgon z powodu pragnienia")
     elif StatsDict["Głód"] == 0:
         print("Zgon z powodu głodu")
-def HPDown(value):
+def HPDown(value): #funkcja zmniejszajaca zdrowe
     """Zmniejsza zdrowie gracza o podaną wartość i sprawdza, czy gracz żyje."""
     if value >= StatsDict["Zdrowie"]:
         Die()
     StatsDict["Zdrowie"] -= value
 
-def HPUp(value):
+def HPUp(value): #funkcja zwiekszajaca zdrowie
     """Regeneruje zdrowie gracza o podaną wartość, ale nie przekracza maksymalnego zdrowia."""
     StatsDict['Zdrowie'] += min(DiffSettings["MaxHP"] - StatsDict["Zdrowie"], value)
-def GetTemperature(self, ambient_temperature, clothing, is_near_fire):
-    """Oblicza efektywną temperaturę otoczenia na podstawie różnych czynników."""
-    protection = sum(clothing.values())
-    fire_bonus = 10 if is_near_fire else 0
-
-    effective_temperature = ambient_temperature + protection + fire_bonus
-    print(f"Efektywna temperatura otoczenia: {effective_temperature}°C")
-
-    return effective_temperature
-
 def InventoryLog(): #funkcja wypisuje wszystkie przedmioty, które gracz aktualnie posiada
     print("Posiadane przedmioty:")
     i = 1
@@ -78,7 +73,8 @@ def InventoryLog(): #funkcja wypisuje wszystkie przedmioty, które gracz aktualn
         i += 1
 def TimeLog(): #log czasu, sformatowany
     print("Dzień: " + str(int(numpy.floor(StatsDict["Czas"])/1440) + 1))
-    print("Godzina: " + str(int(numpy.floor(StatsDict["Czas"]/60))%24) + ":" + str(int(StatsDict["Czas"])%60))
+    time = StatsDict["Czas"]
+    print(f"Godzina: " + str(int(numpy.floor(StatsDict["Czas"]/60))%24) + ":" + f"{int(time)%60:0<2}")
 def Scavenge(): #przeszukiwanie, na podstawie obecnej lokacji
     itemNo = 1 if StatsDict["Zbieractwo"] <35 else 2
     if (StatsDict["Obecna Lokacja"] == Locations[3] or StatsDict["Obecna Lokacja"] == Locations[4]) and Inventory["Siekiera"].Quantity == 0:
@@ -92,7 +88,7 @@ def Scavenge(): #przeszukiwanie, na podstawie obecnej lokacji
         InventoryLog()
         PassTime(60)
     StatsDict["Zbieractwo"] += 1
-def PassTime(timeToPass:int, fatigueModifier = 1): #zwieksza czas, w minutach
+def PassTime(timeToPass:int, fatigueModifier = 1): #zwieksza czas, w minutach i uaktualnia statystyki
     if StatsDict["Głód"] > 0 and StatsDict["Pragnienie"] > 0 and StatsDict["Krwawienie"] == False and StatsDict["Temperatura"] > 0:
         HPUp(timeToPass*0.1)
     if StatsDict["Głód"] == 0: HPDown(timeToPass / 21.6)
@@ -103,7 +99,7 @@ def PassTime(timeToPass:int, fatigueModifier = 1): #zwieksza czas, w minutach
     StatsDict["Głód"] -= min(StatsDict["Głód"], timeToPass/6)
     StatsDict["Pragnienie"] -= min(StatsDict["Pragnienie"], timeToPass/6)
 
-    if StatsDict["Temperatura otoczenia"] <DiffSettings["TempThreshold"]:
+    if StatsDict["Temperatura otoczenia"] <DiffSettings["TempThreshold"] and not StatsDict["Obecna Lokacja"].Fire:
         StatsDict["Temperatura"] -= min(StatsDict["Temperatura"], timeToPass/6)
 
     if fatigueModifier > 0:
@@ -160,7 +156,7 @@ def LocationsLog():
         print(f"{i+1}. {Locations[i].Name}")
         i += 1
 
-def LogOptions():
+def OptionsLog():
     print("1. Pokaż statystyki")
     print("2. Użyj przedmiotu")
     print("3. Przejdź do innej lokacji")
