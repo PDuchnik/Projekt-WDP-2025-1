@@ -32,11 +32,15 @@ zawierającym pliki używane przez grę i zainstalować pakiety z requirements.t
 
 `python -m venv <wybrana nazwa środowiska>`
 
-`source <wybrana nazwaśrodowiska>/bin/activate`
+`source <wybrana nazwaśrodowiska>\scripts\activate.bat`
 
 `py -m pip install -r requirements.txt`
 
+(dla Windows)
+
 Grę uruchamiamy plikiem main.py.
+
+`python main.py`
 
 W grze wybieramy opcje wprowadzając odpowiednie liczby.
 
