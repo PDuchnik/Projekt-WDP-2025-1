@@ -163,6 +163,7 @@ def OptionsLog():
     print("4. Przeszukaj obecną lokację")
     print("5. Odpocznij")
     print("6. Pokaż ekwipunek")
+    print("7. Upuść przedmiot")
 def PrintEventMessage():
     rifle = "brak"
     hatchet = "brak"

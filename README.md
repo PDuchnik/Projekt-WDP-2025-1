@@ -35,3 +35,18 @@ zawierającym pliki używane przez grę i zainstalować pakiety z requirements.t
 `source <wybrana nazwaśrodowiska>/bin/activate`
 
 `py -m pip install -r requirements.txt`
+
+W grze wybieramy opcje wprowadzając odpowiednie liczby.
+
+Gra pozwala na używanie przedmiotów:
+
+- karabin pozwala na polowanie, w odpowiednich lokacjach (4, 5)
+
+- drewno pozwala na rozpalenie ogniska i utrzymanie ogniska
+
+- jedzenie i woda pozwalają na zmniejszenie (choć dla gry to zwiększenie)
+głodu i pragnienia
+
+- apteczka usuwa urazy
+- mięso pozwala na otrzymanie gotowego mięsa, jeśli w pobliżu jest ognisko
+
