@@ -56,3 +56,5 @@ głodu i pragnienia
 - apteczka usuwa urazy
 - mięso pozwala na otrzymanie gotowego mięsa, jeśli w pobliżu jest ognisko
 
+Piotr Duchnik, Jakub Lemowski, Maciej Bogusz
+
