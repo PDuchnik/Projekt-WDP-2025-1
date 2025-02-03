@@ -36,6 +36,8 @@ zawierającym pliki używane przez grę i zainstalować pakiety z requirements.t
 
 `py -m pip install -r requirements.txt`
 
+Grę uruchamiamy plikiem main.py.
+
 W grze wybieramy opcje wprowadzając odpowiednie liczby.
 
 Gra pozwala na używanie przedmiotów:
