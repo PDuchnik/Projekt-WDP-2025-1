@@ -30,7 +30,7 @@ zawierającym pliki używane przez grę i zainstalować pakiety z requirements.t
 
 `cd <ścieżka do plików gry>`
 
-`python3 -m venv <wybrana nazwa środowiska>`
+`python -m venv <wybrana nazwa środowiska>`
 
 `source <wybrana nazwaśrodowiska>/bin/activate`
 
